@@ -3,7 +3,6 @@ import numpy as np
 import pytz
 import datetime
 from itertools import combinations
-from dateutil.relativedelta import relativedelta
 import names
 
 
@@ -196,9 +195,6 @@ def is_meeting_international(participant_timezones, verbose=False):
     for timezone in unique_timezones:
         assert timezone in pytz.common_timezones, "The input timezone {} is not standard"
 
-    if len(unique_timezones) > 1:
-        international = True
-
     # compute largest time difference
     tzs = [pytz.timezone(tz) for tz in unique_timezones]
     utcnow = pytz.timezone('utc').localize(datetime.datetime.utcnow())  # generic time
@@ -208,6 +204,9 @@ def is_meeting_international(participant_timezones, verbose=False):
         diff = abs(a - b).total_seconds() / 3600.0
         if diff > largest_diff_hour:
             largest_diff_hour = diff
+
+    if largest_diff_hour > 0:
+        international = True
 
     if verbose:
         print("*" * 100)
@@ -312,7 +311,17 @@ def process_requirement_file(requirement_file, debug=False):
     return req_names, simple_feat_names, simple_req_feats
 
 
-def recommend_tools(tool_names, feat_names, tool_feats, desired_feats, verbose=False):
+def recommend_tools(tool_names, feat_names, tool_feats, desired_feats, available_tools, verbose=False):
+    """
+
+    :param tool_names:
+    :param feat_names:
+    :param tool_feats:
+    :param desired_feats:
+    :param available_tools: a list of (tool, price)
+    :param verbose:
+    :return:
+    """
     available_req_feats = []
     available_req_feat_names = []
     for rf in desired_feats:
@@ -325,21 +334,29 @@ def recommend_tools(tool_names, feat_names, tool_feats, desired_feats, verbose=F
     scores = np.sum(tool_feats[:, available_req_feats], axis=1)
 
     rankings = np.argsort(scores)[::-1]
-    # ToDo: the top 5 may not all have score > 0
-    top5 = rankings[:5]
-    top5_names = list(np.array(tool_names)[top5])
+    rankings = rankings[:sum(scores > 0)]
+    desired_tool_names = list(np.array(tool_names)[rankings])
+
+    desired_tools = []
+    for tool in available_tools:
+        if tool[0] in desired_tool_names:
+            desired_tools.append(tool)
+
     if verbose:
         print("*" * 100)
-        print("Given the following desired features: {}".format(", ".join(desired_feats)))
-        print("The top 5 recommended tools are {}".format(", ".join(top5_names)))
-        for tool in top5_names:
-            support_feats = np.array(available_req_feat_names)[tool_feats[tool_names.index(tool), available_req_feats] == 1]
-            print("{} supports {}".format(tool, ", ".join(support_feats)))
+        print("Given the following required features: {}".format(", ".join(desired_feats)))
+        if desired_tools:
+            print("The recommended tools are {}".format(desired_tools))
+            for tool in [t[0] for t in desired_tools]:
+                support_feats = np.array(available_req_feat_names)[tool_feats[tool_names.index(tool), available_req_feats] == 1]
+                print("{} supports {}".format(tool, ", ".join(support_feats)))
+        else:
+            print("No matching tools")
 
-    return top5_names
+    return [t[0] for t in desired_tools]
 
 
-def get_desired_features(req_names, feat_names, req_feats, requirements, verbose=False):
+def get_required_features(req_names, feat_names, req_feats, requirements, verbose=False):
     # filter requirements that are not in the list
     available_reqs = []
     available_req_names = []
@@ -360,7 +377,7 @@ def get_desired_features(req_names, feat_names, req_feats, requirements, verbose
     if verbose:
         print("*" * 100)
         print("Given the following meeting requirements: {}".format(", ".join(requirements)))
-        print("The desired tool features are {}".format(", ".join(des_feat_names)))
+        print("The required tool features are {}".format(", ".join(des_feat_names)))
         for req in available_req_names:
             des_feats = np.array(feat_names)[req_feats[req_names.index(req)] == 1]
             print("{} requires features: {}".format(req, ", ".join(des_feats)))
@@ -393,34 +410,6 @@ def test():
     process_systems(tool_names, feat_names, tool_feats, participant_systems, verbose=True)
 
 
-def simulate(verbose=False):
-    """
-    This function simulates a meeting
-
-    :param verbose:
-    :return:
-    """
-    # 1. process files
-    tool_file = "data/tools.xlsx"
-    requirement_file = "data/requirements.xlsx"
-    tool_names, feat_names, tool_feats = process_tool_files(tool_file, debug=False)
-    req_names, feat_names_copy, req_feats = process_requirement_file(requirement_file, debug=False)
-    assert feat_names_copy == feat_names, "tools.xlsx and requirements.xlsx have different tool features"
-
-    # 2. creates a meeting
-    meeting, participants = rand_meeting(verbose=verbose)
-
-    binary_requirements, participant_systems, participant_budgets, participant_timezones = get_requirements(meeting, participants)
-
-    support_tools_1 = process_capacity(meeting[3], verbose=verbose)
-    support_tools_2 = process_systems(tool_names, feat_names, tool_feats, participant_systems, verbose=verbose)
-    support_tools_3 = process_budgets(participant_budgets, verbose=verbose)
-    is_meeting_international(participant_timezones, verbose=verbose)
-
-    des_feat_names = get_desired_features(req_names, feat_names, req_feats, binary_requirements, verbose=verbose)
-    recommend_tools(tool_names, feat_names, tool_feats, des_feat_names, verbose=verbose)
-
-
 def get_requirements(meeting, participants):
     """
     This function maps info about meeting and participants to pre-defined requirements
@@ -429,10 +418,11 @@ def get_requirements(meeting, participants):
     :param participants:
     :return:
     """
-    binary_requirements = []
+    organizer_name, meeting_purpose, organizer_budget, organizer_system, organizer_timezone, organizer_desired_tool, \
+    organizer_desired_features, meeting_hearing_impairment, meeting_vision_impairment = meeting
 
-    organizer_name, time, purpose, capacity = meeting
-    binary_requirements.append("Meeting: {}".format(purpose))
+    binary_requirements = []
+    binary_requirements.append("Meeting: {}".format(meeting_purpose))
 
     timezones = [p[7] for p in participants]
     if is_meeting_international(timezones, verbose=False):
@@ -456,43 +446,122 @@ def get_requirements(meeting, participants):
         participant_budgets.append(budget)
         participant_timezones.append(timezone)
 
+    # incorporate meeting organizer's information
+    if meeting_hearing_impairment:
+        participant_requirements.append("Participant: Hearing Impairment")
+    if meeting_vision_impairment:
+        participant_requirements.append("Participant: Vision Impairment")
+    participant_systems.append(organizer_system)
+    participant_budgets.append(organizer_budget)
+    participant_timezones.append(organizer_timezone)
+
     participant_requirements = list(set(participant_requirements))
     binary_requirements.extend(participant_requirements)
     return binary_requirements, participant_systems, participant_budgets, participant_timezones
 
 
-def rand_meeting(max_capacity=10, verbose=False):
+def set_meeting(organizer_name, meeting_purpose, organizer_budget, organizer_system, organizer_timezone, organizer_desired_tool, organizer_desired_features,
+               meeting_hearing_impairment, meeting_vision_impairment):
     """
-    This function randomly creates a meeting
+    This function checks if the meeting information is in the correct format and combine them
 
+    :param organizer_name:
+    :param meeting_purpose:
+    :param organizer_budget:
+    :param organizer_system:
+    :param organizer_timezone:
+    :param organizer_desired_tool:
+    :param organizer_desired_features:
+    :param meeting_hearing_impairment:
+    :param meeting_vision_impairment:
     :return:
     """
-    organizer_name = names.get_full_name()
-    time = datetime.datetime.now()
-    purpose = list(np.random.choice(["Presentation", "Lecture", "Chat"], 1))[0]
-    capacity = int(np.random.randint(2, max_capacity, size=1)[0])
-    meeting = [organizer_name, time, purpose, capacity]
+    assert isinstance(organizer_name, str)
+    assert meeting_purpose in ["Presentation", "Lecture", "Chat"]
+    assert organizer_budget >= 0
+    assert organizer_system in ["Mac", "Windows", "Linux"]
+    assert organizer_timezone in pytz.all_timezones
+    assert isinstance(organizer_desired_tool, str)
+    assert isinstance(organizer_desired_features, list) or isinstance(organizer_desired_features, set)
+    for feat in organizer_desired_features:
+        assert isinstance(feat, str)
+    assert isinstance(meeting_hearing_impairment, bool)
+    assert isinstance(meeting_vision_impairment, bool)
 
+    meeting = [organizer_name, meeting_purpose, organizer_budget, organizer_system, organizer_timezone, organizer_desired_tool, organizer_desired_features,
+               meeting_hearing_impairment, meeting_vision_impairment]
+
+    return meeting
+
+
+def create_random_meeting(verbose=False):
+    """
+    This function randomly creates meeting and organizer information
+
+    :param verbose:
+    :return:
+    """
+    tools = ['Microsoft Teams', 'Google Meet', 'Google Meet G Suite Essential', 'Google Meet G Suite Enterprise Essential',
+     'Google Hangouts', 'Skype', 'Zoom (Paid)', 'Zoom', 'Cisco WebEx', 'BlueJeans', 'Slack (paid)', 'Slack', 'Whatsapp',
+     'Facetime', 'HouseParty']
+    feats = ['Closed Captioning', 'Screen Sharing', 'Mute All', 'Video Off', 'Join from Browser', 'Free', 'Adjustable Layout',
+     'Dial In With Phone', 'Raise Hand', 'Chat Messaging', 'Meeting Recording', 'Polling/Surveys',
+     'Virtual Background Integration', 'Screen Reader Compatible', '3D Memoji Avatar', 'Live Photo', 'In-chat Games']
+
+    organizer_name = names.get_full_name()
+    meeting_purpose = list(np.random.choice(["Presentation", "Lecture", "Chat"], 1))[0]
+    organizer_budget = np.random.rand(1)[0] * 100
+    organizer_system = list(np.random.choice(["Mac", "Windows", "Linux"], 1))[0]
+    organizer_timezone = list(np.random.choice(pytz.common_timezones, 1))[0]
+    organizer_desired_tool = list(np.random.choice(tools, 1))[0]
+    organizer_desired_features = list(np.random.choice(feats, 3))
+    meeting_hearing_impairment = list(np.random.choice([True, False], 1))[0]
+    meeting_vision_impairment = list(np.random.choice([True, False], 1))[0]
+
+    if verbose:
+        print("#" * 100)
+        print("{} is organizing a meeting".format(organizer_name))
+        print("Meeting Purpose: {}".format(meeting_purpose))
+        print("Organizer's budget: {}".format(organizer_budget))
+        print("Organizer's system: {}".format(organizer_system))
+        print("Organizer's timezone: {}".format(organizer_timezone))
+        print("Organizer's desired tool: {}".format(organizer_desired_tool))
+        print("Organizer's desired feats: {}".format(", ".join(organizer_desired_features)))
+        if meeting_hearing_impairment:
+            print("Organizer thinks that there is participant with hearing impairment")
+        if meeting_vision_impairment:
+            print("Organizer thinks that there is participant with vision impairment")
+
+    meeting = [organizer_name, meeting_purpose, organizer_budget, organizer_system, organizer_timezone, organizer_desired_tool, organizer_desired_features,
+               meeting_hearing_impairment, meeting_vision_impairment]
+
+    return meeting
+
+
+def create_random_participants(capacity, verbose=False):
+    """
+    This function randomly creates participants
+
+    :param capacity: the number of participants in the meeting
+    :return:
+    """
     participants = []
     for i in range(capacity):
-        name = names.get_full_name()
-        hearing_impairment = list(np.random.choice([True, False], 1))[0]
-        vision_impairment = list(np.random.choice([True, False], 1))[0]
-        introvert = list(np.random.choice([True, False], 1))[0]
-        bad_internet_connection = list(np.random.choice([True, False], 1))[0]
-        system = list(np.random.choice(["Mac", "Windows", "Linux"], 1))[0]
-        budget = np.random.rand(1)[0] * 100
-        timezone = list(np.random.choice(pytz.common_timezones, 1))[0]
-        participant = [name, hearing_impairment, vision_impairment, introvert, bad_internet_connection, system,
-                       budget, timezone]
+        participant_name = names.get_full_name()
+        participant_hearing_impairment = list(np.random.choice([True, False], 1))[0]
+        participant_vision_impairment = list(np.random.choice([True, False], 1))[0]
+        participant_introvert = list(np.random.choice([True, False], 1))[0]
+        participant_bad_internet_connection = list(np.random.choice([True, False], 1))[0]
+        participant_system = list(np.random.choice(["Mac", "Windows", "Linux"], 1))[0]
+        participant_budget = np.random.rand(1)[0] * 100
+        participant_timezone = list(np.random.choice(pytz.common_timezones, 1))[0]
+
+        participant = [participant_name, participant_hearing_impairment, participant_vision_impairment, participant_introvert, participant_bad_internet_connection, participant_system,
+                       participant_budget, participant_timezone]
         participants.append(participant)
 
     if verbose:
         print("#" * 100)
-        print("{} is organizing a meeting".format(meeting[0]))
-        print("Meeting Time: {}".format(meeting[1]))
-        print("Meeting Purpose: {}".format(meeting[2]))
-        print("Meeting # Participants: {}".format(meeting[3]))
         for participant in participants:
             print("-"*100)
             print("Participant {}'s info".format(participant[0]))
@@ -508,7 +577,73 @@ def rand_meeting(max_capacity=10, verbose=False):
             print("He/She has budget {}".format(participant[6]))
             print("He/She is in timezone {}".format(participant[7]))
 
-    return meeting, participants
+    return participants
+
+
+def simulate(verbose=False):
+    """
+    This function simulates a meeting
+
+    :param verbose:
+    :return:
+    """
+    # 1. load cognitive data from excel sheets
+    tool_file = "data/tools.xlsx"
+    requirement_file = "data/requirements.xlsx"
+    tool_names, feat_names, tool_feats = process_tool_files(tool_file, debug=False)
+    req_names, feat_names_copy, req_feats = process_requirement_file(requirement_file, debug=False)
+    assert feat_names_copy == feat_names, "tools.xlsx and requirements.xlsx have different tool features"
+
+    # 2. randomly creates participant
+    # Sheryl: the number of participants can be either set randomly or collected from the webpage
+    capacity = 10
+    participants = create_random_participants(capacity, verbose=verbose)
+
+    ####################################################################################################################
+    # 3. collecting_information for the meeting
+    # interactions with the organizer along the way
+    # (1) international meeting
+    participant_timezones = [p[7] for p in participants]
+    # the returned meeting_is_international is a boolean
+    meeting_is_international = is_meeting_international(participant_timezones, verbose=verbose)
+    # (2) vision impairment
+    vision_impairments = [p[2] for p in participants]
+    if np.any(vision_impairments):
+        print("Make sure you always ask them whether they need any additional accomodations - they have certain tools that work best for them and it would be best to understand those constraints before the meeting.")
+    # ToDo: can add more
+
+
+    meeting = create_random_meeting(verbose=verbose)
+    # Sheryl: instead of using the above random generator, use the function below when using data collected from the webpage
+    # meeting = set_meeting(organizer_name, meeting_purpose, organizer_budget, organizer_system, organizer_timezone,
+    #                       organizer_desired_tool, organizer_desired_features,
+    #                       meeting_hearing_impairment, meeting_vision_impairment)
+    ####################################################################################################################
+
+    # 4. process the meeting information and participants information
+    print("#"*100)
+    binary_requirements, participant_systems, participant_budgets, participant_timezones = get_requirements(meeting, participants)
+
+    # support_tools_1: (tool, price)
+    support_tools_1 = process_capacity(capacity, verbose=verbose)
+    # support_tools_2: (tool, lacking_systems, ac_feats)
+    support_tools_2 = process_systems(tool_names, feat_names, tool_feats, participant_systems, verbose=verbose)
+    # support_tools_3: (tool, price)
+    support_tools_3 = process_budgets(participant_budgets, verbose=verbose)
+
+    # combine hard constraints from above
+    support_tools_13 = set(support_tools_1) & set(support_tools_3)
+    # support_tools_123: (tool, price)
+    support_tools_123 = []
+    for tool in support_tools_13:
+        if tool[0] in [t[0] for t in support_tools_2]:
+            support_tools_123.append(tool)
+
+    # 3.2 binary
+    required_features = get_required_features(req_names, feat_names, req_feats, binary_requirements, verbose=verbose)
+    # add organizer's desired features
+    input_features = required_features + meeting[6]
+    recommend_tools(tool_names, feat_names, tool_feats, input_features, support_tools_123, verbose=verbose)
 
 
 if __name__ == "__main__":
