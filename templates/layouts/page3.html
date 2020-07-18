@@ -1,0 +1,129 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<style>
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+#conditional-visual{
+display: none;
+}
+#conditional-audio{
+  display: none;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+html {
+  height: 100%; 
+  background: #000060;
+  background: -webkit-linear-gradient(to left, #6441A5, #2a0845); 
+}
+body {
+  font-family: montserrat, arial, verdana;
+  background: transparent;
+}
+#test {
+  text-align: left;
+  position: relative;
+  margin-top: 30px;
+  background: white;
+  border: 0 none;
+  border-radius: 0px;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+  padding: 20px 30px;
+  box-sizing: border-box;
+  width: 80%;
+  margin: 0 10%;
+}
+
+#test input {
+  font-family: montserrat;
+  color: #2C3E50;
+  font-size: 13px;
+}
+
+#test button {
+    background-color: #FFFFFF;
+    display:inline-block;
+    padding:0.35em 1.2em;
+    border:0.1em solid #000060;
+    margin:0 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:300;
+    color:#000060;
+    text-align:center;
+    transition: all 0.2s;
+  }
+
+#test button:hover {
+  background-color: #000060;
+  color:#FFFFFF;
+}
+
+#test title{
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #2C3E50;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  font-weight: bold;
+}    
+</style>
+
+<div class="container" id="test">
+    <h2 id = "title">Let's learn more about this meeting. </h2>
+    <h4> The information you provide us will help us determine how you can best accommodate your participants' needs for your upcoming meeting</h3>
+    
+    <form action="" method="post" class="form" role="form">
+        {{ form.csrf_token() }}
+
+        <div class="form-group" id = "visual-info-select">
+          {{ wtf.form_field(form.time_zone)}}
+        </div> 
+        <div class="form-group">
+            {{ wtf.form_field(form.meeting_capacity)}}
+        </div>
+        <div class="form-group">
+                {{ wtf.form_field(form.meeting_purpose)}}
+        </div>
+        <div class="form-group">
+                {{ wtf.form_field(form.meeting_duration)}}
+        </div>
+        <div class="form-group">
+                {{ wtf.form_field(form.organizer_system)}}
+        </div>
+        <div class="form-group">
+                {{ wtf.form_field(form.budget)}}
+        </div>
+        
+        <div class="form-group">
+                {{ wtf.form_field(form.desired_tool)}}
+        </div> 
+
+        <p>Select the most important virtual meeting tool features:</p>
+        <div class="form-group">
+                {{ wtf.form_field(form.closed_captioning)}}
+                {{ wtf.form_field(form.screen_sharing)}}
+                {{ wtf.form_field(form.mute_all)}}
+                {{ wtf.form_field(form.video_off)}}
+                {{ wtf.form_field(form.join_browser)}}
+                {{ wtf.form_field(form.adjustable_layout)}}
+                {{ wtf.form_field(form.join_phone)}}
+                {{ wtf.form_field(form.raise_hand)}}
+                {{ wtf.form_field(form.chat_messaging)}}
+                {{ wtf.form_field(form.meeting_recording)}}
+                {{ wtf.form_field(form.polling)}}
+                {{ wtf.form_field(form.virtual_background)}}
+                {{ wtf.form_field(form.screen_reader)}}
+                {{ wtf.form_field(form.avatar)}}
+                {{ wtf.form_field(form.live_photo)}}
+                {{ wtf.form_field(form.in_chat_games)}}
+        </div>     
+        <button type="submit" class="btn btn-primary">Next</button>
+      </form>
+</div>
+{% endblock %}

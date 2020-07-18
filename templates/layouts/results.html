@@ -1,0 +1,155 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<div>
+<style>
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+  #conditional-part{
+    display: none;
+  }
+  * {
+  margin: 0;
+  padding: 0;
+}
+html {
+  height: 100%; 
+  background: #000060;
+  background: -webkit-linear-gradient(to left, #6441A5, #2a0845); 
+}
+body {
+  font-family: montserrat, arial, verdana;
+  background: transparent;
+}
+#test {
+  text-align: left;
+  position: relative;
+  margin-top: 30px;
+  background: white;
+  border: 0 none;
+  border-radius: 0px;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+  padding: 20px 30px;
+  box-sizing: border-box;
+  width: 80%;
+  margin: 0 10%;
+}
+
+#test input {
+  font-family: montserrat;
+  color: #2C3E50;
+  font-size: 13px;
+}
+
+#test button {
+  width: 100px;
+  background: #ee0979;
+  font-weight: bold;
+  color: white;
+  border: 0 none;
+  border-radius: 25px;
+  cursor: pointer;
+  padding: 10px 5px;
+  margin: 10px 5px;
+}
+
+#test title{
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #2C3E50;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  font-weight: bold;
+}  
+
+table,th,tbody,tr, td, th{
+  text-align: center;
+  margin: auto;
+  border:1px solid #dedede;
+  padding: 1rem;
+  width: 50%;
+}
+
+.table {
+  display: table;
+  width: 50%;
+}
+
+#inclusive-behaviors {
+  border: 1px solid #000060;
+  border-style: rounded;
+  padding: 20px;
+}
+
+/* #mappings {
+  display: table;
+  width: 75%;
+} */
+
+</style>
+
+<body>
+  <div class="container" id = "test">
+      <h2 id = "title">Recommendations: Inclusive Meeting Tools & Behaviors </h2>
+      <h4> Based on the data we gathered from you and your meeting participants, we've summarized the major meeting requirements along with the associated inclusive features here:</h3>
+        <table>
+          <tbody>
+          <tr><th>Recommended Tool</th></tr>    
+          {% for item in items %}
+          <tr><td>{{ item }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+        <table id = "mappings">
+            <caption>Here's more information about why we recommended the above tools: </caption>
+            <tr>
+                <td></td>
+                {% for tool in items %}
+                <th scope="col">{{ tool }}</th>
+                {% endfor %}
+            </tr>
+            <br>
+            <br>
+            <div id = "inclusive-behaviors">
+              <h4>Here is a list of inclusive behaviors you can practice with these virtual tools during meetings: </h4>
+              <br>
+              <p>Interrupt interruptions – Come equipped with phrases like “Hang on a sec – I want to make sure I understand Fatima’s point before we add to it.” If one person is dominating or interrupting repeatedly, have them take note of important action items during the meeting. This intrinsically shifts them into listening mode.</p>
+              <br>
+              <p>Give credit where it’s due – Acknowledge each other’s contributions. Studies have shown that the positive contributions of women in the workplace have little to no impact on performance reviews, while equal contributions from men led to significantly higher performance evaluations.</p>
+            </div>
+            <br>
+            <br>
+            
+            {% set practice = TFMapping %}
+            {% for feature in features %}
+            <tr>
+                <th scope = "row">{{ feature }}</th>
+                {% for tool in items %}
+                    {% if feature in practice[tool] %}
+                        <td class="y_n">Yes</td>
+                    {% else %}
+                        <td class="y_n">No</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+  </body>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#mappings td.y_n').each(function() {
+        if ($(this).text() == 'Yes') {
+          // alert(`${this.value} is checked`);
+          $(this).css('background-color', '#AFC4FA')
+        }
+        if ($(this).text() == 'No') {
+          // alert(`${this.value} is checked`);
+          $(this).css('background-color', '#FFFFFF')
+        }
+      });
+    });    
+  </script>
+</div>
+
+{% endblock %}

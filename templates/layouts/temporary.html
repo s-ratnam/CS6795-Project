@@ -1,0 +1,48 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/hello.css') }}">
+
+
+<div class="col-md-6 col-mod-offset-3">
+    <form id="msform">
+    <ul id="progressbar">
+        <li class="active">Accommodations</li>
+        <li>Meeting Requirements</li>
+        <li>Tool Selection</li>
+        <li>Recommendation</li>
+
+    </ul>
+
+    <fieldset>
+        <h2 class='fs-title'>Accommodations</h2>
+        <h3 class='fs-subtitle'>Let's learn more about your participants </h2>
+        <h3 class='fs-subtitle'> Does anyone in your meeting need accommodations for the following?</h3>
+        
+        <form action="" method="post" class="form" role="form">
+            {{ form.csrf_token() }}
+
+            <div class="form-group" id = "visual-info-select">
+            {{ wtf.form_field(form.V_impaired)}}
+            </div>
+
+        
+            <!-- <p id = "test">PLEASE WORK!!!! Remember THIS about Visual Impairments</p> -->
+    
+            <div class="form-group">
+                {{ wtf.form_field(form.A_impaired)}}
+            </div>
+        
+            {% if get_more_info %}
+                <h4> Want to hear directly from your meeting participants about their needs? Click here to send a form to your participants. </h4>
+                <p>*Disclaimer: We will use the input from your participants in our recommendation software. </p>
+            {% endif %}
+        
+        
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </fieldset>
+</form>
+</div>
+</script>
+{% endblock %}

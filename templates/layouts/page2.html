@@ -1,0 +1,148 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<div>
+<style>
+  @import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+  #conditional-visual{
+  display: none;
+}
+  #conditional-audio{
+    display: none;
+}
+* {
+    margin: 0;
+    padding: 0;
+  }
+  html {
+    height: 100%; 
+    background: #000060;
+    background: -webkit-linear-gradient(to left, #6441A5, #2a0845); 
+  }
+  body {
+    font-family: montserrat, arial, verdana;
+    background: transparent;
+  }
+  #test {
+    text-align: left;
+    position: relative;
+    margin-top: 30px;
+    background: white;
+    border: 0 none;
+    border-radius: 0px;
+    box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+    padding: 20px 30px;
+    box-sizing: border-box;
+    width: 80%;
+    margin: 0 10%;
+  }
+
+  #test input {
+    font-family: montserrat;
+    color: #2C3E50;
+    font-size: 13px;
+  }
+
+  #test button {
+    background-color: #FFFFFF;
+    display:inline-block;
+    padding:0.35em 1.2em;
+    border:0.1em solid #000060;
+    margin:0 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:300;
+    color:#000060;
+    text-align:center;
+    transition: all 0.2s;
+  }
+
+  a.previous {
+    background-color: #FFFFFF;
+    display:inline-block;
+    padding:0.35em 1.2em;
+    border:0.1em solid #000060;
+    margin:0 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:300;
+    color:#000060;
+    text-align:center;
+    transition: all 0.2s;
+  }
+
+  #test button:hover {
+    background-color: #000060;
+    color:#FFFFFF;
+  }
+
+  #test title{
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #2C3E50;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    font-weight: bold;
+  }
+</style>
+<body>
+  <div class="container" id = "test">
+      <h2 id = "title">Let's learn more about your participants.</h2>
+      <h4>Does anyone in your meeting need accommodations for the following?</h3>
+      <form role = "form" action="" method="post">
+        <div>
+          <input type="checkbox" id="visual-impairment" name="impairment" value="visual-impairment">
+          <label for="visual-impairment">Visual Impairments</label>
+        </div>
+        <div id="conditional-visual" display="none">
+            <p class="conditional-visual">A few things to keep in mind when accommodating individuals with visual impairments: </p>
+            <p class="conditional-visual">Make sure to alwasy ask whether they need any additional accomodations. There are certain tools that work better for them, so try to understand those needs before the meeting.</p>
+            <p class="conditional-visual">If you are displayed any images, graphs or anything that involves visualizuation, be sure to describe these images in detail. For example, instead of saying something like "Oh, you see that line on the graph, we need to fix the sales numbers". Instead, say "Based on this graph, we see a positive relationship between these variables and so that is why we need to fix the sales numbers"</p>
+            <p class="conditional-visual">If you are using  collaboration tools for this meeting, it's important to ensure that these are accessible and compatible with screen readers for visually impaired attendees. </p>
+        </div>
+        <div>
+          <input type="checkbox" id="auditory-impairment" name="impairment" value="auditory-impairment">
+          <label for="auditory-impairment">Hearing Impairments</label>
+        </div>
+        <div id="conditional-audio" display="none">
+            <p class="conditional-audio">A few things to keep in mind when accommodating individuals with hearing impairments: </p>
+            <p class="conditional-audio">Ensure that there are alternative features available for interaction such as a chat or an external window where attendees with hearing impairments can interact and particiapte equitably in the meeting. </p>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Next</button>
+      </form>
+  </div>
+    <br>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('input[type=checkbox][name=impairment][value=visual-impairment]').change(function() {
+      if ($(this).prop("checked")) {
+        $("#conditional-visual").show()
+      }
+      else{
+        $("#conditional-visual").hide()
+      }
+    });
+  });    
+</script>
+<script type = "text/javascript">
+  $(document).ready(function() {
+      $('input[type=checkbox][name=impairment][value=auditory-impairment]').change(function() {
+        if ($(this).prop("checked")) {
+          $("#conditional-audio").show()
+        }
+        else{
+          $("#conditional-audio").hide()
+        }
+      });
+    });    
+</script>
+</div>
+{% endblock %}
