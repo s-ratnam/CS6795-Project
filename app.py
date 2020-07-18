@@ -107,8 +107,7 @@ def page_4():
 def results():
     global overall_capacity
     print("THIS IS WHERE WE AT: ", meeting_global_list)
-    meeting_input = cognitive_model.set_meeting(meeting_global_list[0], meeting_global_list[1], meeting_global_list[2], meeting_global_list[3], meeting_global_list[4],
-                                                meeting_global_list[5], meeting_global_list[6], meeting_global_list[7], meeting_global_list[8])
+    meeting_input = cognitive_model.set_meeting(meeting_global_list[0], meeting_global_list[1], meeting_global_list[2], meeting_global_list[3], meeting_global_list[4], meeting_global_list[5], meeting_global_list[6], meeting_global_list[7], meeting_global_list[8])
     results = cognitive_model.simulate(meeting_input, overall_capacity, verbose=True)
     result_tools = results[0]
     # overall meeting requirements based on the data collected from participants and the organizer 
