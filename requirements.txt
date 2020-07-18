@@ -14,5 +14,4 @@ pandas
 numpy
 pytz
 datetime
-itertools==8.4.0
 names
