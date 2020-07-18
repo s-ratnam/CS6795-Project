@@ -1,9 +1,7 @@
 #!bin/python
-import flask_pymongo
 from flask import Flask, request, render_template, redirect, url_for
 from model import RegForm, testForm, VA_impairments, meetingInfo
 from flask_bootstrap import Bootstrap
-from flask_pymongo import PyMongo
 import cognitive_model
 import urllib
 
