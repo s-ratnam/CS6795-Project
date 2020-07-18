@@ -11,7 +11,9 @@ app.config.from_mapping(
 app.config["MONGO_URI"] = "mongodb://localhost:161.35.8.231:8080/organizer"
 # mongo = PyMongo(app)
 Bootstrap(app)
-meeting_global_list = ["Alfred Rivera"]
+global meeting_global_list
+meeting_global_list = []
+meeting_global_list.append("Alfred Rivera")
 global visual_bool
 visual_bool = False
 global auditory_bool
@@ -85,6 +87,7 @@ def page_3():
         # NEED TO ADD A FEW MORE HERE 
         global visual_bool
         global auditory_bool
+        global meeting_global_list
         meeting_global_list.append(form.meeting_purpose.data)
         meeting_global_list.append(float(form.budget.data))
         meeting_global_list.append(form.organizer_system.data)
@@ -106,6 +109,7 @@ def page_4():
 @app.route('/results', methods=['GET', 'POST'])
 def results():
     global overall_capacity
+    global meeting_global_list
     print("THIS IS WHERE WE AT: ", meeting_global_list)
     meeting_input = cognitive_model.set_meeting(meeting_global_list[0], meeting_global_list[1], meeting_global_list[2], meeting_global_list[3], meeting_global_list[4], meeting_global_list[5], meeting_global_list[6], meeting_global_list[7], meeting_global_list[8])
     results = cognitive_model.simulate(meeting_input, overall_capacity, verbose=True)
