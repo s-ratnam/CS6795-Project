@@ -21,17 +21,21 @@ auditory_bool = False
 global overall_capacity
 overall_capacity = 0 
 
-# @app.route('/', methods=['GET','POST'])
-# def landing_page():
-#     if request.method =='POST':
-#         return redirect(url_for('page_1'))
-#     return render_template('layouts/page_1.html')
+@app.route('/', methods=['GET','POST'])
+def landing_page():
+    if request.method =='POST':
+        return redirect(url_for('user_role'))
+    return render_template('layouts/page1.html')
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/user_role', methods=['GET', 'POST'])
 def user_role():
     if request.method == 'POST':
+        user = request.form.get('role')
+        if user == "organizer":
+            return redirect(url_for('page_2'))
+        if user == "participant":
+            return redirect(url_for('results_no'))
         # org_id = mongo.db.organizer.insert({'role': user_Selection})
-        return redirect(url_for('page_2'))
     return render_template('layouts/landingPage_custom.html')
 
 @app.route('/page_2', methods=['GET', 'POST'])
@@ -50,13 +54,20 @@ def page_2():
 
 @app.route('/page_3', methods = ['GET', 'POST'])
 def page_3():
+    
     form = meetingInfo(request.form)
     if request.method == 'GET':
         form.budget.data = 0.0
-    if request.method == 'POST' and form.validate_on_submit():
+        form.capacity = 0
+        select_MC = 0
+    if request.method == 'POST':
+        select_TZ = request.form.get('timezonelist')
+        select_MC = request.form.get('capacity')
+        select_MD = request.form.get('meetingduration')
+        print(select_MD)
         features = []
         global overall_capacity
-        overall_capacity = int(form.meeting_capacity.data)
+        overall_capacity = int(select_MC)
         print("THIS IS THE CAPACITY: ", overall_capacity)
         if (form.closed_captioning.data):
             features.append('Closed Captioning')
@@ -84,14 +95,15 @@ def page_3():
             features.append('Virtual Background Integration')
         if (form.screen_reader.data):
             features.append('Screen Reader Compatible')
-        # NEED TO ADD A FEW MORE HERE 
+        
+        # MAINTAIN THIS ORDER OF APPENDING, JUST 
         global visual_bool
         global auditory_bool
         global meeting_global_list
         meeting_global_list.append(form.meeting_purpose.data)
         meeting_global_list.append(float(form.budget.data))
         meeting_global_list.append(form.organizer_system.data)
-        meeting_global_list.append(form.time_zone.data)
+        meeting_global_list.append(select_TZ)
         meeting_global_list.append(form.desired_tool.data)
         meeting_global_list.append(features)
         meeting_global_list.append(visual_bool)
@@ -102,7 +114,13 @@ def page_3():
 @app.route('/page_4', methods=['GET', 'POST'])
 def page_4():
     if request.method == 'POST':
-        return redirect(url_for('results'))
+        user_control = request.form.get('role')
+        if user_control == "Yes":
+            return redirect(url_for('results'))
+        if user_control =="No":
+            return redirect(url_for('results_no'))
+        else:
+            return redirect(url_for('results_no'))
 
     return render_template('layouts/page4.html')
 
@@ -120,7 +138,9 @@ def results():
     result_tf_mapping = results[3]
     return render_template('layouts/results.html', TFMapping = result_tf_mapping, items = result_tools, RFmapping = result_reqs_to_features, features = result_features)
 
-
+@app.route('/results_no', methods=['GET', 'POST'])
+def results_no():
+    return render_template('layouts/results_no.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

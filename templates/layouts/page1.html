@@ -125,6 +125,48 @@
     color: white;
 }
 
+.img-container{
+  text-align: center;
+  display: inline-block;
+  float:left;
+}
+
+img {
+  display: block;
+  max-width: 75%; 
+  max-height:75%;
+  width: auto;
+  height: auto; 
+
+}
+
+.intro{
+  display: inline-block;
+  margin-top:15%;
+  /* border: 0 none;
+  border-radius: 0px;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+  padding: 20px 30px;
+  box-sizing: border-box;
+  width: 50%;
+  margin: 0 10%; */
+  /* padding: 50px; */
+}
+
+.text-content{
+  margin-top: 25%;
+}
+
+.button-test{
+  margin-top: 30px;
+}
+
+.child{
+  width: 50%;
+  float:left;
+  border: 2px gray;
+}
+
 </style>
 <body>
     <!-- <ul id = "progressbar">
@@ -135,6 +177,28 @@
         <li>Inclusive Tool Recommendations</li>
       </ul> -->
   <div class="container" id = "test">
-      <img src="enabled.png">
+        
+        <div class="child">
+            <img src="https://i.ibb.co/PtnkxFD/enabled.png" alt="enabled"/></a>     
+        </div>
+        <div class="child">
+            <div class="text-content">
+            <h3>Welcome to Enabled</h3>
+            <p class="content">With Enabled, we want to help you organize inclusive meetings, so that you can bring more voices to the table. </p>
+            <p>Engage. Empower. Enable.</p>
+            <br>
+            <div class="button-test">
+                <form role = "form" action="" method="post">
+                <button type="submit" class="btn btn-primary" id="the-button">Get Started</button>
+                </form>
+            </div>
+          </div>
+        </div>
+      
+      <hr>
+    </div>
+  </body>
 </div>
-</body>
+</html>
+
+{% endblock %}

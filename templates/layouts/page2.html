@@ -7,10 +7,23 @@
 
   #conditional-visual{
   display: none;
+  margin-left:50px;
 }
   #conditional-audio{
     display: none;
+    margin-left:50px;
 }
+
+#V_header {
+  font-size: large;
+  font-style: italic;
+}
+
+#A_header{
+  font-size: large;
+  font-style: italic;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -89,29 +102,60 @@
     letter-spacing: 2px;
     font-weight: bold;
   }
+  hr.dotted {
+    border-top: 3px dotted #bbb;
+  }
+
+  .general-recs{
+    margin-left:20px;
+  }
+
+  #visual-impairment{
+    margin-top: 30px;
+  }
+  #auditory-impairment{
+    margin-top: 30px;
+  }
 </style>
 <body>
   <div class="container" id = "test">
       <h2 id = "title">Let's learn more about your participants.</h2>
-      <h4>Does anyone in your meeting need accommodations for the following?</h3>
+      <h4>Does anyone in your meeting need accommodations for the following? (Check all that apply)</h3>
+      <div class ="general-recs">
+      <p>Reminder: In general, make sure to always ask whether your participants need additional accommodations. There are certain tools that work better for them, so try to understand those needs before the meeting.</p>
+      <p>You can make your virtual meeting more understandable and accessible to attendees with developmental disabilities as well as people with limited English proficiency by using plain language.</p>
+      <p>If you have made your documents and slides accessible, email them to attendees before the meeting.</p>
+      </div>
       <form role = "form" action="" method="post">
         <div>
           <input type="checkbox" id="visual-impairment" name="impairment" value="visual-impairment">
           <label for="visual-impairment">Visual Impairments</label>
         </div>
         <div id="conditional-visual" display="none">
-            <p class="conditional-visual">A few things to keep in mind when accommodating individuals with visual impairments: </p>
-            <p class="conditional-visual">Make sure to always ask whether they need any additional accomodations. There are certain tools that work better for them, so try to understand those needs before the meeting.</p>
-            <p class="conditional-visual">If you are displayed any images, graphs or anything that involves visualizuation, be sure to describe these images in detail. For example, instead of saying something like "Oh, you see that line on the graph, we need to fix the sales numbers". Instead, say "Based on this graph, we see a positive relationship between these variables and so that is why we need to fix the sales numbers"</p>
-            <p class="conditional-visual">If you are using  collaboration tools for this meeting, it's important to ensure that these are accessible and compatible with screen readers for visually impaired attendees. </p>
+            <p class="conditional-visual" id ="V_header">A few things to keep in mind when accommodating individuals with visual impairments: </p>
+            <hr class ="dotted">
+            <ul>
+              <li>If you are displaying any images, graphs or anything that involves visualizuation, be sure to describe these images in detail. For example, instead of saying something like "Oh, you see that line on the graph, we need to fix the sales numbers". Instead, say "Based on this graph, we see a positive relationship between these variables and so that is why we need to fix the sales numbers"</li>
+              <li>If you are using  collaboration tools for this meeting, it's important to ensure that these are accessible and compatible with screen readers for visually impaired attendees. </li>
+              <li>Read the slide title every time you advance to a new slide.</li>
+              <li>If you will be displaying videos, try to find an audio transcribed version of the video on YouTube.</li>
+              <li>It is best practice for all attendees to say their name each time they speak, so that blind/low vision participants can follow along.</li>
+            </ul>
         </div>
         <div>
           <input type="checkbox" id="auditory-impairment" name="impairment" value="auditory-impairment">
           <label for="auditory-impairment">Hearing Impairments</label>
         </div>
+
         <div id="conditional-audio" display="none">
-            <p class="conditional-audio">A few things to keep in mind when accommodating individuals with hearing impairments: </p>
-            <p class="conditional-audio">Ensure that there are alternative features available for interaction such as a chat or an external window where attendees with hearing impairments can interact and particiapte equitably in the meeting. </p>
+            <p class="conditional-audio" id="A_header">A few things to keep in mind when accommodating individuals with hearing impairments: </p>
+            <hr class ="dotted">
+            <ul>
+                <li>Captioning is used to include people with hearing disabilities in your virtual meetings. </li>
+                <li>Ensure that there are alternative features available for interaction such as a chat or an external window where attendees with hearing impairments can interact and particiapte equitably in the meeting. </li>
+                <li>If you plan on showing any videos during the meeting, make sure the video is captioned first.</li>
+                <li>In case there are issues with technology or internet connections, record your online meeting so attendees can re-watch anything they missed.</li>
+            </ul>
         </div>
         <br>
         <button type="submit" class="btn btn-primary">Next</button>

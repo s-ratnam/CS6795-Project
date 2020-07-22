@@ -1,19 +1,51 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
+<div>
 <style>
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
 
-#conditional-visual{
+#conditional-TZ{
 display: none;
+margin-top: 20px;
+margin-bottom:20px;
 }
+#conditional-MC{
+display: none;
+margin-top: 20px;
+margin-bottom:20px;
+}
+#conditional-MD-1{
+  display: none;
+  margin-top: 20px;
+  margin-bottom:20px;
+}
+
+#conditional-MD-2{
+  display: none;
+  margin-top: 20px;
+  margin-bottom:20px;
+}
+
 #conditional-audio{
   display: none;
+}
+/* Dotted border */
+hr.dotted {
+  border-top: 3px dotted #00008B;
 }
 * {
   margin: 0;
   padding: 0;
 }
+#MC-label{
+  margin-top:20px;
+  display:block;
+}
+#MC-input{
+  margin-bottom:20px;
+}
+
 html {
   height: 100%; 
   background: #000060;
@@ -71,59 +103,223 @@ body {
   margin-bottom: 10px;
   letter-spacing: 2px;
   font-weight: bold;
-}    
+} 
+
+.select-css {
+	display: block;
+	font-family: montserrat, arial, verdana;
+	color: #444;
+	line-height: 1.3;
+	padding: .6em 1.4em .5em .8em;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	border: 1px solid #aaa;
+	box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+	border-radius: .5em;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+	background-color: #fff;
+	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+	  linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%);
+	background-repeat: no-repeat, repeat;
+	background-position: right .7em top 50%, 0 0;
+	background-size: .65em auto, 100%;
+}
+.select-css::-ms-expand {
+	display: none;
+}
+.select-css:hover {
+	border-color: #888;
+}
+.select-css:focus {
+	border-color: #aaa;
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
+}
+.select-css option {
+	font-weight:normal;
+}
+
+label {
+  margin-bottom:20px;
+}
+
+select {
+  margin-bottom:20px;
+}
+
+.section-header {
+  color: #000060;
+  text-decoration: underline ;
+  
+}
+
+
 </style>
+<body>
+  <div class="container" id="test">
+      <h2 id = "title">Let's learn more about this meeting. </h2>
+      <h4> The information you provide us will help us determine how you can best accommodate your participants' needs for your upcoming meeting.</h3>
+      
+      <form action="" method="post" class="form" role="form">
+          {{ form.csrf_token() }}
+          <h4 class="section-header">Meeting Requirements</h4>
 
-<div class="container" id="test">
-    <h2 id = "title">Let's learn more about this meeting. </h2>
-    <h4> The information you provide us will help us determine how you can best accommodate your participants' needs for your upcoming meeting</h3>
-    
-    <form action="" method="post" class="form" role="form">
-        {{ form.csrf_token() }}
+          <div>
+            <label for="time-zone">Select a time zone</label>
+            <select class="select-css" id="time-zone" name = "timezonelist">
+              <option value="Timezone">(Timezone Selection)</option>
+              <option value="US/Alaska">US/Alaska</option>
+              <option value="US/Aleutian">US/Aleutian</option>
+              <option value="US/Arizona">US/Arizona</option>
+              <option value="US/Central">US/Central</option>
+              <option value="US/East-Indiana">US/East-Indiana</option>
+              <option value="US/Eastern">US/Eastern</option>
+              <option value="US/Hawaii">US/Hawaii</option>
+              <option value="US/Mountain">US/Mountain</option>
+              <option value="US/Pacific">US/Pacific</option>
+              <option value="Asia/Singapore">Asia/Singapore</option>
+              <option value="Europe/Amsterdam">Europe/Amsterdam</option>
+            </select>
+          </div>
 
-        <div class="form-group" id = "visual-info-select">
-          {{ wtf.form_field(form.time_zone)}}
-        </div> 
-        <div class="form-group">
-            {{ wtf.form_field(form.meeting_capacity)}}
-        </div>
-        <div class="form-group">
-                {{ wtf.form_field(form.meeting_purpose)}}
-        </div>
-        <div class="form-group">
-                {{ wtf.form_field(form.meeting_duration)}}
-        </div>
-        <div class="form-group">
-                {{ wtf.form_field(form.organizer_system)}}
-        </div>
-        <div class="form-group">
-                {{ wtf.form_field(form.budget)}}
-        </div>
-        
-        <div class="form-group">
-                {{ wtf.form_field(form.desired_tool)}}
-        </div> 
+          <div id="conditional-TZ" display="none">
+            <p class="conditional-TZ">Be mindful of your participants who are attending this meeting through other time zones!</p>
+          </div>
 
-        <p>Select the most important virtual meeting tool features:</p>
-        <div class="form-group">
-                {{ wtf.form_field(form.closed_captioning)}}
-                {{ wtf.form_field(form.screen_sharing)}}
-                {{ wtf.form_field(form.mute_all)}}
-                {{ wtf.form_field(form.video_off)}}
-                {{ wtf.form_field(form.join_browser)}}
-                {{ wtf.form_field(form.adjustable_layout)}}
-                {{ wtf.form_field(form.join_phone)}}
-                {{ wtf.form_field(form.raise_hand)}}
-                {{ wtf.form_field(form.chat_messaging)}}
-                {{ wtf.form_field(form.meeting_recording)}}
-                {{ wtf.form_field(form.polling)}}
-                {{ wtf.form_field(form.virtual_background)}}
-                {{ wtf.form_field(form.screen_reader)}}
-                {{ wtf.form_field(form.avatar)}}
-                {{ wtf.form_field(form.live_photo)}}
-                {{ wtf.form_field(form.in_chat_games)}}
-        </div>     
-        <button type="submit" class="btn btn-primary">Next</button>
-      </form>
+          <div>
+            <div id = "MC-label">
+            <label for ="meeting-capacity">Meeting capacity (enter a number)</label>
+            </div>
+            <div id = "MC-input">
+            <input type="number" id="capacity" name="capacity">
+            </div>
+          </div>
+
+          <div id="conditional-MC" display="none">
+            <p class ="conditional-MC"> It might be difficult to engage in deep discussions on a call with this many people. Consider dividing the meeting into sub-groups to create smaller, meaningful collaboration opportunities.</p>
+          </div>
+
+
+          <!-- <div class="form-group" id = "visual-info-select">
+            {{ wtf.form_field(form.time_zone)}}
+          </div>  -->
+          <!-- <div class="form-group">
+              {{ wtf.form_field(form.meeting_capacity)}}
+          </div> -->
+          <div class="form-group">
+                  {{ wtf.form_field(form.meeting_purpose)}}
+          </div>
+          <div>
+              <label for="meeting-duration">Meeting duration</label>
+              <select class="select-css" id="meeting-duration" name = "meetingduration">
+                <option value="0-60 minutes">0-60 minutes</option>
+                <option value="1-3 hours">1-3 hours</option>
+                <option value="3+ hours">3+ hours</option>
+              </select>
+          </div>
+          <div id="conditional-MD-1" display="none">
+              <p class ="conditional-MD"> Be mindful of screen fatigue!  Attention spans vary greatly from person to person, especially in long presentations and meetings. If you are using ASL interpreters, they will also need regularly scheduled breaks, typically every hour.</p>
+          </div>
+          <div id="conditional-MD-2" display="none">
+              <p class ="conditional-MD"> When you have a meeting that's longer than one hour, you'll likely find that half of your attendees are "lost" after the 45-minute mark. If you need to have a longer meeting, include regular breaks of five to 10 minutes.</p>
+          </div>
+          <br>
+          <div class="form-group">
+              {{ wtf.form_field(form.budget)}}
+          </div>
+
+          <hr class ="dotted">
+          <h4 class="section-header">Technical Requirements</h4>
+
+          <div class="form-group">
+              {{ wtf.form_field(form.desired_tool)}}
+          </div> 
+          <div class="form-group">
+                  {{ wtf.form_field(form.organizer_system)}}
+          </div>
+
+          <p>Select the most important virtual meeting tool features:</p>
+          <div class="form-group">
+                  <p> Audio Accessible Features</p>
+                  {{ wtf.form_field(form.closed_captioning)}}
+                  {{ wtf.form_field(form.mute_all)}}
+                  <br>
+                  <p> Visual Accessible Features</p>
+                  {{ wtf.form_field(form.screen_reader)}}
+                  {{ wtf.form_field(form.meeting_recording)}}
+                  <br>
+                  <p> Privacy Features</p>
+                  {{ wtf.form_field(form.video_off)}}
+                  {{ wtf.form_field(form.virtual_background)}}
+                  <br>
+                  <p>Compatibility Features</p> 
+                  {{ wtf.form_field(form.join_phone)}}
+                  {{ wtf.form_field(form.join_browser)}}
+                  {{ wtf.form_field(form.adjustable_layout)}}
+                  <br>
+                  <p>Engagement Features </p>
+                  {{ wtf.form_field(form.screen_sharing)}}
+                  {{ wtf.form_field(form.raise_hand)}}
+                  {{ wtf.form_field(form.avatar)}}
+                  {{ wtf.form_field(form.live_photo)}}
+                  {{ wtf.form_field(form.in_chat_games)}}
+                  {{ wtf.form_field(form.polling)}}
+                  {{ wtf.form_field(form.chat_messaging)}}                  
+                
+          </div>     
+          <button type="submit" class="btn btn-primary">Next</button>
+        </form>
+  </div>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('select[name=timezonelist]').change(function() {
+      if ($(this).val() != "(Timezone Selection)") {
+        $("#conditional-TZ").show()
+      }
+      else{
+        $("#conditional-TZ").hide()
+      }
+    });
+  });    
+</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('input[type=number][name=capacity]').bind('keyup keydown change', function() {
+      if ($(this).val() > 25) {
+        $("#conditional-MC").show()
+      }
+      else{
+        $("#conditional-MC").hide()
+      }
+    });
+  });    
+</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('select[name=meetingduration]').change(function() {
+      if ($(this).val() == "3+ hours") {
+        $("#conditional-MD-1").show()
+        $("#conditional-MD-2").hide()
+      }
+      else if ($(this).val() == "1-3 hours") {
+        $("#conditional-MD-2").show()
+        $("#conditional-MD-1").hide()
+      }
+      else{
+        $("#conditional-MD-1").hide()
+        $("#conditional-MD-2").hide()
+
+      }
+    });
+  });    
+</script>
 </div>
 {% endblock %}
