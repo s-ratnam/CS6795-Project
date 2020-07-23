@@ -90,7 +90,9 @@ table,th,tbody,tr, td, th{
 <body>
   <div class="container" id = "test">
       <h2 id = "title">Recommendations: Inclusive Meeting Tools & Behaviors </h2>
+      <hr>
       <h4> Based on the information we gathered from you and your meeting participants, we've summarized the major meeting requirements along with the associated inclusive features here:</h3>
+      <hr>
         <table>
           <tbody>
           <tr><th>Recommended Tools</th></tr>    
@@ -149,6 +151,7 @@ table,th,tbody,tr, td, th{
               {% if key in features %}
                 <dt>{{ key }}</dt>
                 <dd style="text-indent: 15px;">{{ value }}</dd>
+                <br>
               {% endif %}
             {% endfor %}
         </dl>
