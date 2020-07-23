@@ -126,6 +126,18 @@ def page_4():
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
+    feature_behavior_dict = {
+        "Closed Captioning": "Captioning is used to include people with hearing disabilities in your virtual meetings.",
+        "Screen Sharing": "Consider the size of everyone’s devices while screen sharing to ensure they can follow along!",
+        "Mute All": "When we leave our microphones on, it also shares our background sounds with other attendees. This can be distracting for some folks.",
+        "Video Off": "This capability provides the flexibility to different attendees, especially if they are not comfortable sharing their video.",
+        "Join from Browser": "This can be powerful if you have people using different platforms to join your meeting.",
+        "Dial In With Phone": "There might be different barriers for access for this virtual meeting and providing different avenues of access improves the flexibility for participants. ",
+        "Chat Messaging": "This is extremely useful feature for all to interact, especially for people with hearing impairments if they need an alternative way to interact with others. ",
+        "Meeting Recording": "In case there are issues with technology or internet connections, record your online meeting so attendees can re-watch anything they missed. It is important to also ask for consent while using this feature!",
+        "Virtual Background Integration":"This is inclusive so as to make people feel more comfortable while sharing their video. ",
+        "Screen Reader Compatible":"It's important to check for screen reader compatibility while selecting tools to include people who use screen readers while navigating the Internet."
+    }
     global overall_capacity
     global meeting_global_list
     print("THIS IS WHERE WE AT: ", meeting_global_list)
@@ -136,7 +148,7 @@ def results():
     result_reqs_to_features = results[1]
     result_features = results[2]
     result_tf_mapping = results[3]
-    return render_template('layouts/results.html', TFMapping = result_tf_mapping, items = result_tools, RFmapping = result_reqs_to_features, features = result_features)
+    return render_template('layouts/results.html', TFMapping = result_tf_mapping, items = result_tools, RFmapping = result_reqs_to_features, features = result_features, fb_dict = feature_behavior_dict)
 
 @app.route('/results_no', methods=['GET', 'POST'])
 def results_no():
