@@ -10,6 +10,11 @@ display: none;
 margin-top: 20px;
 margin-bottom:20px;
 }
+#conditional-OS{
+display: none;
+margin-top: 20px;
+margin-bottom:20px;
+}
 #conditional-MC{
 display: none;
 margin-top: 20px;
@@ -240,9 +245,23 @@ select {
           <div class="form-group">
               {{ wtf.form_field(form.desired_tool)}}
           </div> 
-          <div class="form-group">
+          <!-- <div class="form-group">
                   {{ wtf.form_field(form.organizer_system)}}
+          </div> -->
+
+          <div>
+              <label for="operating-system">Operating System</label>
+              <select class="select-css" id="operating-system" name = "operatingsystem">
+                <option value="(OS Selection)">(OS Selection)</option>
+                <option value="Mac">Mac</option>
+                <option value="Windows">Windows</option>
+                <option value="Linux">3+ hours</option>
+              </select>
           </div>
+          <div id="conditional-OS" display="none">
+              <p class ="conditional-MD"> People use different devices to stay connected! Try to ensure that this meeting is accessible across different platforms. </p>
+          </div>
+          <br>
 
           <p>Select the most important virtual meeting tool features:</p>
           <div class="form-group">
@@ -317,6 +336,18 @@ select {
         $("#conditional-MD-1").hide()
         $("#conditional-MD-2").hide()
 
+      }
+    });
+  });    
+</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('select[name=operatingsystem]').change(function() {
+      if ($(this).val() != "(OS Selection)") {
+        $("#conditional-OS").show()
+      }
+      else if ($(this).val() == "(OS Selection)") {
+        $("#conditional-TZ").hide()
       }
     });
   });    

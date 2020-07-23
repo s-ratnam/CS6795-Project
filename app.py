@@ -64,7 +64,7 @@ def page_3():
         select_TZ = request.form.get('timezonelist')
         select_MC = request.form.get('capacity')
         select_MD = request.form.get('meetingduration')
-        print(select_MD)
+        select_OS = request.form.get('operatingsystem')
         features = []
         global overall_capacity
         overall_capacity = int(select_MC)
@@ -102,7 +102,7 @@ def page_3():
         global meeting_global_list
         meeting_global_list.append(form.meeting_purpose.data)
         meeting_global_list.append(float(form.budget.data))
-        meeting_global_list.append(form.organizer_system.data)
+        meeting_global_list.append(select_OS)
         meeting_global_list.append(select_TZ)
         meeting_global_list.append(form.desired_tool.data)
         meeting_global_list.append(features)
