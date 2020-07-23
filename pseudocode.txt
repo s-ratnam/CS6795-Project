@@ -1,0 +1,303 @@
+########################################################################################################################
+# Collect participants's information
+
+FUNCTION collect_participants_information():
+
+    participants_information = []
+    FOR each of the participants:
+        retrieve name
+        retrieve if the participant has hearing impairment
+        retrieve if the participant has vision impairment
+        retrieve if the participant is an introvert
+        retrieve if the participant has bad internet
+        retrieve which operating system the participant is using
+        retrieve the participant's budget
+        retrieve the participant's timezone
+        append all the above information to participants_information
+
+    RETURN participants_information
+
+
+########################################################################################################################
+# Decide if the meeting is international
+
+FUNCTION is_the_meeting_international(participants_information):
+
+    get participants_timezones from participants_information
+    get unique_timezones from participants_timezones
+
+    IF there is only one timezone in unique_timezones:
+        international_meeting = True
+    ELSE:
+        international_meeting = False
+
+    IF international_meeting:
+        print("this meeting is international")
+
+    RETURN international_meeting
+
+
+########################################################################################################################
+# Organize a meeting
+
+# Concepts
+tools = ['Microsoft Teams', 'Google Meet', 'Google Meet G Suite Essential', 'Google Meet G Suite Enterprise Essential',
+     'Google Hangouts', 'Skype', 'Zoom (Paid)', 'Zoom', 'Cisco WebEx', 'BlueJeans', 'Slack (paid)', 'Slack', 'Whatsapp',
+     'Facetime', 'HouseParty']
+features = ['Closed Captioning', 'Screen Sharing', 'Mute All', 'Video Off', 'Join from Browser', 'Free', 'Adjustable Layout',
+     'Dial In With Phone', 'Raise Hand', 'Chat Messaging', 'Meeting Recording', 'Polling/Surveys',
+     'Virtual Background Integration', 'Screen Reader Compatible', '3D Memoji Avatar', 'Live Photo', 'In-chat Games']
+meeting purposes = ["Presentation", "Lecture", "Chat"]
+operating systems = ["Mac", "Windows", "Linux"]
+
+FUNCTION collect_meeting_information():
+
+    decide the purpose of the meeting
+    retrieve the budget
+    retrieve the operating system
+    retrieve the timezone
+    retrieve the desired virtual teleconferecing tool as one of the tools
+    retrieve the desired features of virtual teleconferecing tools
+    retrieve if any participant has vision impairment
+    retrieve if any participant has hearing impairment
+    store all the above information to meeting_information
+
+    RETURN meeting_information
+
+
+########################################################################################################################
+# Decide what tools are suitable based on the number of participants
+
+# Concepts
+tool_capacity = {"Microsoft Teams": 250,
+                 "Google Meet": 100,
+                 "Google Meet G Suite Essential": 150,
+                 "Google Meet G Suite Enterprise Essential": 250,
+                 "Google Hangouts": 25,
+                 "Skype": 20,
+                 "Zoom (Paid)": {15: 100, 20: 300, 25: 500},
+                 "Zoom": 100,
+                 "Cisco WebEx": {13.5: 50, 17.95: 100, 26.95: 200},
+                 "BlueJeans": 0,
+                 "Slack (paid)": 0,
+                 "Slack": 0,
+                 "Whatsapp": 3,
+                 "Facetime": 32,
+                 "HouseParty": 8}
+
+FUNCTION suitable_tools_based_on_capacity(tool_capacity, number_of_participants):
+
+    get number_of_participants from participants_infromation
+
+    suitable_tools = []
+    FOR tool in tool_capacity:
+        IF the tool only has one price tier:
+            IF number_of_participants < tool_capacity[tool]:
+                add (tool, 0) to suitable_tools
+        ELSE:
+            FOR price of the tool:
+                IF number_of_participants < tool_capacity[tool][price]:
+                    add (tool, price) to suitable_tools
+
+    RETURN suitable_tools
+
+
+########################################################################################################################
+# Decide what tools are suitable based on the participants' operating systems
+
+# Concepts
+tool_systems = {"Microsoft Teams": ["Mac", "Windows", "Linux"],
+                 "Google Meet": ["Mac", "Windows", "Linux"],
+                 "Google Meet G Suite Essential": ["Mac", "Windows", "Linux"],
+                 "Google Meet G Suite Enterprise Essential": ["Mac", "Windows", "Linux"],
+                 "Google Hangouts": ["Mac", "Windows", "Linux"],
+                 "Skype": ["Mac", "Windows", "Linux"],
+                 "Zoom (Paid)": ["Mac", "Windows", "Linux"],
+                 "Zoom": ["Mac", "Windows", "Linux"],
+                 "Cisco WebEx": ["Mac", "Windows"],
+                 "BlueJeans": ["Mac", "Windows", "Linux"],
+                 "Slack (paid)": ["Mac", "Windows", "Linux"],
+                 "Slack": ["Mac", "Windows", "Linux"],
+                 "Whatsapp": ["Mac", "Windows"],
+                 "Facetime": ["Mac"],
+                 "HouseParty": ["Mac", "Windows"]}
+
+FUNCTION suitable_tools_based_on_systems(tool_systems, participants_information):
+
+    get participants_operating_systems from participants_information
+
+    suitable_tools = []
+    FOR tool in tool_systems:
+        unsupported_systems = participants_operating_systems - tool_systems[tool]
+        IF unsupported_systems is empty:
+            append (tool, None) to suitable_tools
+        ELSE:
+            accessible_features = []
+            IF tool has "Dial In With Phone" feature:
+                append "Dial In With Phone" to accessible_features
+            IF tool has "Join from Browser" feature:
+                append "Join from Browser" to accessible_features
+            append (tool, accessible_features) to suitable_tools
+
+    RETURN suitable_tools
+
+
+########################################################################################################################
+# Decide what tools are suitable based on the participants' budgets
+
+# Concepts
+tool_costs = {"Microsoft Teams": 0,
+              "Google Meet": 0,
+              "Google Meet G Suite Essential": 10,
+              "Google Meet G Suite Enterprise Essential": 20,
+              "Google Hangouts": 0,
+              "Skype": 0,
+              "Zoom (Paid)": [15, 20, 25],
+              "Zoom": 0,
+              "Cisco WebEx": [13.5, 17.95, 26.95],
+              "BlueJeans": 0,
+              "Slack (paid)": [10, 20, 30],
+              "Slack": 0,
+              "Whatsapp": 0,
+              "Facetime": 0,
+              "HouseParty": 0}
+
+FUNCTION suitable_tools_based_on_budgets(tool_costs, participants_information):
+
+    get participants_budgets from participants_information
+    lowest_budget = min(participants_budgets)
+
+    suitable_tools = []
+    FOR tool in tool_costs:
+        IF tool only has one price tier:
+            IF tool_costs[tool] <= lowest_budget:
+                append (tool, 0) to suitable_tools
+        ELSE:
+            FOR price of the tool:
+                IF tool_costs[tool][price] <= lowest_budget:
+                    append (tool, price) to suitable_tools
+
+    RETURN suitable_tools
+
+
+########################################################################################################################
+# Retrieve features of each tool
+
+# concepts
+tools = ['Microsoft Teams', 'Google Meet', 'Google Meet G Suite Essential', 'Google Meet G Suite Enterprise Essential',
+     'Google Hangouts', 'Skype', 'Zoom (Paid)', 'Zoom', 'Cisco WebEx', 'BlueJeans', 'Slack (paid)', 'Slack', 'Whatsapp',
+     'Facetime', 'HouseParty']
+features = ['Closed Captioning', 'Screen Sharing', 'Mute All', 'Video Off', 'Join from Browser', 'Free', 'Adjustable Layout',
+     'Dial In With Phone', 'Raise Hand', 'Chat Messaging', 'Meeting Recording', 'Polling/Surveys',
+     'Virtual Background Integration', 'Screen Reader Compatible', '3D Memoji Avatar', 'Live Photo', 'In-chat Games']
+
+FUNCTION retrieve_features_of_tools(tools, features):
+
+    initialize tools_features with an empty 2D matrix
+    FOR tool in tools:
+        FOR feature in features:
+            IF tool has feature:
+                tools_features[tool][feature] = True
+            ELSE:
+                tools_features[tool][feature] = False
+
+    RETURN tools_features
+
+
+########################################################################################################################
+# Retrieve features of each tool
+
+# concepts
+requirements = ["Participant: Hearing Impairment", "Participant: Vision Impairment", "Meeting: International",
+                "Meeting: Presentation", "Meeting: Lecture", "Meeting: Chat", "Participant: Introvert",
+                "Participant: Operating System", "Participant: Budget", "Participant: Internet Connection"]
+features = ['Closed Captioning', 'Screen Sharing', 'Mute All', 'Video Off', 'Join from Browser', 'Free', 'Adjustable Layout',
+     'Dial In With Phone', 'Raise Hand', 'Chat Messaging', 'Meeting Recording', 'Polling/Surveys',
+     'Virtual Background Integration', 'Screen Reader Compatible', '3D Memoji Avatar', 'Live Photo', 'In-chat Games']
+
+FUNCTION retrieve_features_for_requirements(requirements, features):
+
+    initialize requirements_to_features with an empty 2D matrix
+    FOR requirement in requirements:
+        FOR feature in features:
+            IF the feature is related to the requirement
+                requirements_to_features[requirement][feature] = True
+            ELSE:
+                requirements_to_features[requirement][feature] = False
+
+    RETURN requirements_to_features
+
+
+########################################################################################################################
+# Get meeting requirements based on participants' information and meeting information
+
+# concepts
+requirements = ["Participant: Hearing Impairment", "Participant: Vision Impairment", "Meeting: International",
+                "Meeting: Presentation", "Meeting: Lecture", "Meeting: Chat", "Participant: Introvert",
+                "Participant: Operating System", "Participant: Budget", "Participant: Internet Connection"]
+
+FUNCTION get_meeting_requirements(requirements, participants_information, meeting_information):
+
+    requirements_for_meeting = []
+    FOR requirement in requirements:
+        IF requirement is relevant for the meeting based on participants_information and meeting_information:
+            append requirement to requirements_for_meeting
+
+    RETURN requirements_for_meeting
+
+
+########################################################################################################################
+# Retrieve accessible features for the meeting
+
+FUNCTION retrieve_accessible_features_for_meeting(requirements_for_meeting, requirements_to_features):
+
+    initialize a dictionary scores_of_features to score each feature
+    FOR requirement in requirements_for_meeting:
+        FOR feature in requirements_to_features[requirement]:
+            add 1 to scores_of_features[feature]
+
+    accessible_features_for_meeting = top K from argsort(scores_of_features)
+
+    RETURN accessible_features_for_meeting
+
+
+########################################################################################################################
+# Retrieve tools that should be used for the meeting
+
+FUNCTION retrieve_accessible_tools(accessible_features_for_meeting, tools_features, suitable_tools):
+
+    initialize a dictionary scores_of_tools to score each tool
+    FOR feature in accessible_features_for_meeting:
+        FOR tool in tools_features:
+            IF feature is in tool_features[tool]:
+                add 1 to scores_of_tools[tool]
+
+    accessible_tools_for_meeting = top K from argsort(scores_of_tools) intersection with suitable_tools
+
+    RETURN accessible_tools_for_meeting
+
+
+########################################################################################################################
+# Organize a meeting
+
+participants_information = collect_participants_information()
+meeting_information = collect_meeting_information()
+
+international_meeting = is_meeting_international(participants_information)
+
+suitable_tools_1 = suitable_tools_based_on_capacity(tool_capacity, number_of_participants)
+suitable_tools_2 = suitable_tools_based_on_budgets(tool_costs, participants_information)
+suitable_tools_3 = suitable_tools_based_on_systems(tool_systems, participants_information)
+
+suitable_tools = []
+FOR tool in tools:
+    IF tool is in suitable_tools_1 and suitable_tools_2 and suitable_tools_3:
+        append tool to suitable_tools
+
+requirements_for_meeting = get_meeting_requirements(requirements, participants_information, meeting_information)
+tool_features = retrieve_features_of_tools(tools, features)
+requirements_to_features = retrieve_features_for_requirements(requirements, features)
+accessible_features_for_meeting = retrieve_accessible_features_for_meeting(requirements_for_meeting, requirements_to_features)
+accessible_tools_for_meeting = retrieve_accessible_tools(accessible_features_for_meeting, tools_features, suitable_tools)
+
+tool_to_use = randomly select a tool from accessible_tools_for_meeting
